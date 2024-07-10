@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\MidWifeAuthController;
+use App\Models\MidWife;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -24,3 +26,7 @@ Route::controller(AuthController::class)->group(function() {
     Route::post('/login', 'login');
 });
 
+Route::controller(MidWife::class)->group(function() {
+    Route::post('/mid_register', 'register');
+    Route::post('/mid_login', 'login');
+});
