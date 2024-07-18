@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
+
+use App\Models\MidWife;
 use Illuminate\Http\Request;
-use App\Models\Midwife;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,36 +18,43 @@ class MidWifeAuthController extends Controller
      */
     public function register(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'name' => 'required|string|max:250',
-            'email' => 'required|string|email:rfc,dns|max:250|unique:midwives,email',
-            'password' => 'required|string|min:8|confirmed'
-        ]);
+        try {
+            $validate = Validator::make($request->all(), [
+                'name' => 'required|string|max:250',
+                'email' => 'required|string|email:rfc,dns|max:250|unique:midwives,email',
+                'password' => 'required|string|min:8|confirmed'
+            ]);
 
-        if ($validate->fails()) {
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Validation Error!',
+                    'data' => $validate->errors(),
+                ], 403);
+            }
+
+            $midwife = MidWife::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]);
+
+            $data['token'] = $midwife->createToken($request->email)->plainTextToken;
+            $data['midwife'] = $midwife;
+
+            $response = [
+                'status' => 'success',
+                'message' => 'Midwife is created successfully.',
+                'data' => $data,
+            ];
+
+            return response()->json($response, 201);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'failed',
-                'message' => 'Validation Error!',
-                'data' => $validate->errors(),
-            ], 403);
+                'message' => 'Server Error: ' . $e->getMessage(),
+            ], 500);
         }
-
-        $midwife = Midwife::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
-
-        $data['token'] = $midwife->createToken($request->email)->plainTextToken;
-        $data['midwife'] = $midwife;
-
-        $response = [
-            'status' => 'success',
-            'message' => 'Midwife is created successfully.',
-            'data' => $data,
-        ];
-
-        return response()->json($response, 201);
     }
 
     /**
@@ -56,42 +65,47 @@ class MidWifeAuthController extends Controller
      */
     public function login(Request $request)
     {
-        print ('login');
-        $validate = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string'
-        ]);
+        try {
+            $validate = Validator::make($request->all(), [
+                'email' => 'required|string|email',
+                'password' => 'required|string'
+            ]);
 
-        if ($validate->fails()) {
-            print ('fails');
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Validation Error!',
+                    'data' => $validate->errors(),
+                ], 403);
+            }
+
+            // Check email exist
+            $midwife = MidWife::where('email', $request->email)->first();
+
+            // Check password
+            if (!$midwife || !Hash::check($request->password, $midwife->password)) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Invalid credentials'
+                ], 401);
+            }
+
+            $data['token'] = $midwife->createToken($request->email)->plainTextToken;
+            $data['midwife'] = $midwife;
+
+            $response = [
+                'status' => 'success',
+                'message' => 'Midwife is logged in successfully.',
+                'data' => $data,
+            ];
+
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'failed',
-                'message' => 'Validation Error!',
-                'data' => $validate->errors(),
-            ], 403);
+                'message' => 'Server Error: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // Check email exist
-        $midwife = Midwife::where('email', $request->email)->first();
-
-        // Check password
-        if (!$midwife || !Hash::check($request->password, $midwife->password)) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Invalid credentials'
-            ], 401);
-        }
-
-        $data['token'] = $midwife->createToken($request->email)->plainTextToken;
-        $data['midwife'] = $midwife;
-
-        $response = [
-            'status' => 'success',
-            'message' => 'Midwife is logged in successfully.',
-            'data' => $data,
-        ];
-
-        return response()->json($response, 200);
     }
 
     /**
@@ -102,10 +116,17 @@ class MidWifeAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        auth()->user()->tokens()->delete();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Midwife is logged out successfully'
-        ], 200);
+        try {
+            auth()->user()->tokens()->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Midwife is logged out successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Server Error: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }
