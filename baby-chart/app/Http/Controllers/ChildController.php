@@ -29,6 +29,7 @@ class ChildController extends Controller
             'weight' => 'nullable|numeric',
             'user_id' => 'required|exists:users,id',
             'midWifeId' => 'required|exists:mid_wives,id',
+            'qr_code' => 'nullable|string',
         ]);
 
         // Map the validated data to the correct column names in the database
@@ -45,6 +46,7 @@ class ChildController extends Controller
             'weight' => $validatedData['weight'],
             'user_id' => $validatedData['user_id'],
             'mid_wife_id' => $validatedData['midWifeId'],
+            'qr_code' => $validatedData['qr_code'],
         ];
 
         // Create a new child using the validated data
