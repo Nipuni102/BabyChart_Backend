@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\ChildController;
 use App\Http\Controllers\MidWifeAuthController;
-use App\Models\MidWife;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -26,7 +26,9 @@ Route::controller(AuthController::class)->group(function() {
     Route::post('/login', 'login');
 });
 
-Route::controller(MidWife::class)->group(function() {
+Route::controller(MidWifeAuthController::class)->group(function() {
     Route::post('/mid_register', 'register');
     Route::post('/mid_login', 'login');
 });
+
+Route::post('/children', [ChildController::class, 'store'])->name('children.store');
