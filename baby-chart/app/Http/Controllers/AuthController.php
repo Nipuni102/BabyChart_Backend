@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -106,6 +107,35 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'User is logged out successfully'
+        ], 200);
+    }
+
+    //user details fetch
+    public function getUserFromToken(Request $request)
+    {
+        $token = $request->bearerToken();
+
+        if (!$token) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Token is required',
+            ], 401);
+        }
+
+        $personalAccessToken = PersonalAccessToken::findToken($token);
+
+        if (!$personalAccessToken) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Invalid token',
+            ], 401);
+        }
+
+        $user = $personalAccessToken->tokenable;
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $user,
         ], 200);
     }
 }

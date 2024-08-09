@@ -23,7 +23,8 @@ Route::get('/', function () {
 // Public routes of authtication
 Route::controller(AuthController::class)->group(function() {
     Route::post('/register', 'register');
-    Route::post('/login', 'login');
+    Route::post('/login', 'login')->name('login');
+    Route::get('/user', [AuthController::class, 'getUserFromToken']);
 });
 
 Route::controller(MidWifeAuthController::class)->group(function() {
@@ -32,3 +33,5 @@ Route::controller(MidWifeAuthController::class)->group(function() {
 });
 
 Route::post('/children', [ChildController::class, 'store'])->name('children.store');
+
+
