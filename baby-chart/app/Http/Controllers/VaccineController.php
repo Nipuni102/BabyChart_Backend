@@ -31,4 +31,12 @@ class VaccineController extends Controller
             'vaccine' => $vaccine
         ], 201);
     }
+
+    // app/Http/Controllers/VaccineController.php
+    public function index()
+    {
+        $vaccines = Vaccine::all();
+        return view('vaccines', compact('vaccines'));
+    }
+
 }

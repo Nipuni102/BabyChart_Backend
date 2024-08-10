@@ -37,4 +37,7 @@ Route::post('/children', [ChildController::class, 'store'])->name('children.stor
 
 Route::post('/vaccines', [VaccineController::class, 'store']);
 
+Route::get('/vaccines_details', [VaccineController::class, 'index'])->name('vaccines.index');
+
+
 
