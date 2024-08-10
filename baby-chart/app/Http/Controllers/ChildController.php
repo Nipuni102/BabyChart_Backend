@@ -34,8 +34,8 @@ class ChildController extends Controller
 
         // Map the validated data to the correct column names in the database
         $childData = [
-            'name' => $validatedData['name'],
-            'date_of_birth' => $validatedData['dateOfBirth'],
+	    'name' => $validatedData['name'], 'date_of_birth' =>
+	    $validatedData['dateOfBirth'],
             'hearing' => $validatedData['hearing'],
             'height' => $validatedData['height'],
             'birth_weight' => $validatedData['birthWeight'],
