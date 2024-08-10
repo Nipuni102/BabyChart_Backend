@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\MidWifeAuthController;
+use App\Http\Controllers\VaccineController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -33,5 +34,7 @@ Route::controller(MidWifeAuthController::class)->group(function() {
 });
 
 Route::post('/children', [ChildController::class, 'store'])->name('children.store');
+
+Route::post('/vaccines', [VaccineController::class, 'store']);
 
 
