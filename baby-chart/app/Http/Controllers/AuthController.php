@@ -131,7 +131,11 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = $personalAccessToken->tokenable;
+//        $user = $personalAccessToken->tokenable;
+//        $user = $personalAccessToken->tokenable->load('children');
+        $user = $personalAccessToken->tokenable->load([
+            'children.vaccines' // Load children and their vaccines
+        ]);
 
         return response()->json([
             'status' => 'success',

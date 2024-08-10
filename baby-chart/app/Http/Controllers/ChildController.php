@@ -48,11 +48,10 @@ class ChildController extends Controller
             'mid_wife_id' => $validatedData['midWifeId'],
         ];
 
-        // Handle QR code file upload
         if ($request->hasFile('qr_code')) {
             $file = $request->file('qr_code');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images'), $fileName);
+            $path = $file->storeAs('public/qr_codes', $fileName);
             $childData['qr_code'] = $fileName; // Save filename to database
         } else {
             $childData['qr_code'] = null; // Ensure qr_code is null if no file is uploaded
